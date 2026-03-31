@@ -21,8 +21,13 @@
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
+        @keyframes pulseGlow {
+            0%, 100% { box-shadow: 0 0 15px rgba(99, 102, 241, 0.2); }
+            50% { box-shadow: 0 0 25px rgba(99, 102, 241, 0.6); }
+        }
         .animate-fade-in { animation: fadeIn 0.6s ease-out forwards; }
         .animate-zoom-in { animation: zoomIn 0.6s ease-out forwards; }
+        .playing-music { animation: pulseGlow 2s infinite; }
         
         /* Ensure Spline logo is hidden if possible, and remove background color */
         spline-viewer {
@@ -31,6 +36,9 @@
     </style>
 </head>
 <body class="bg-[#030308] font-sans text-slate-300 relative selection:bg-purple-500/30">
+
+    <!-- Hidden YouTube Player for Background Music -->
+    <div id="youtube-player" style="display: none; position: absolute;"></div>
 
     <div class="min-h-screen flex flex-col overflow-hidden relative">
         <!-- Massive Glowing Aura Background -->
@@ -57,8 +65,15 @@
                         </div>
                     </div>
 
-                    <div class="flex items-center" id="nav-actions">
-                        <!-- Score or Get Started button will be injected here -->
+                    <div class="flex items-center space-x-4">
+                        <!-- Music Toggle Button -->
+                        <button onclick="toggleMusic()" id="music-btn" title="Toggle Ambient Music" class="w-9 h-9 rounded-full bg-white/5 border border-white/10 text-slate-400 hover:text-white hover:bg-white/10 transition-all duration-300 flex items-center justify-center relative">
+                            <i data-lucide="volume-x" class="w-4 h-4"></i>
+                        </button>
+                        
+                        <div class="flex items-center" id="nav-actions">
+                            <!-- Score or Get Started button will be injected here -->
+                        </div>
                     </div>
                 </div>
             </div>
@@ -171,6 +186,43 @@
 
     <!-- Application Logic -->
     <script>
+        // --- YouTube Audio Integration ---
+        // 1. Load the YouTube IFrame Player API code asynchronously.
+        var tag = document.createElement('script');
+        tag.src = "https://www.youtube.com/iframe_api";
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        // 2. This function creates an <iframe> (and YouTube player) after the API code downloads.
+        let ytPlayer;
+        let isYtReady = false;
+
+        function onYouTubeIframeAPIReady() {
+            ytPlayer = new YT.Player('youtube-player', {
+                height: '0',
+                width: '0',
+                videoId: 'TU3rtJzgCqk', // Your requested track
+                playerVars: {
+                    'autoplay': 0,
+                    'controls': 0,
+                    'loop': 1,
+                    'playlist': 'TU3rtJzgCqk', // Playlist required for looping a single video
+                    'playsinline': 1
+                },
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
+        }
+
+        // 3. The API will call this function when the video player is ready.
+        function onPlayerReady(event) {
+            isYtReady = true;
+            event.target.setVolume(50); // Set default volume (0-100)
+        }
+        // --- End YouTube Integration ---
+
+
         // Data Store
         const quizData = {
             "central-tendencies": {
@@ -215,8 +267,40 @@
             currentQuestionIndex: 0,
             score: 0,
             selectedAnswer: null,
-            isAnswered: false
+            isAnswered: false,
+            isMusicPlaying: false
         };
+
+        // Audio Logic
+        function toggleMusic() {
+            const btn = document.getElementById('music-btn');
+
+            if (!isYtReady || !ytPlayer) {
+                console.warn("Audio player is still buffering, please wait a second...");
+                return;
+            }
+
+            if (state.isMusicPlaying) {
+                ytPlayer.pauseVideo();
+                state.isMusicPlaying = false;
+                
+                // Update styling back to muted state
+                btn.innerHTML = `<i data-lucide="volume-x" class="w-4 h-4"></i>`;
+                btn.classList.remove('bg-indigo-500/20', 'border-indigo-500/50', 'text-indigo-400', 'playing-music');
+                btn.classList.add('bg-white/5', 'border-white/10', 'text-slate-400');
+            } else {
+                ytPlayer.playVideo();
+                state.isMusicPlaying = true;
+                
+                // Update styling to active glowing state
+                btn.innerHTML = `<i data-lucide="music" class="w-4 h-4"></i>`;
+                btn.classList.remove('bg-white/5', 'border-white/10', 'text-slate-400');
+                btn.classList.add('bg-indigo-500/20', 'border-indigo-500/50', 'text-indigo-400', 'playing-music');
+            }
+            
+            // Re-render the specific icon inside the button
+            lucide.createIcons();
+        }
 
         // Navigation & Views
         function switchView(viewId) {
