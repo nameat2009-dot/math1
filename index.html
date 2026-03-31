@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MathFlash Clone</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #05020a; /* Ultra dark purple/black */
+            font-family: 'Inter', sans-serif;
+        }
+        .serif-title {
+            font-family: 'Playfair Display', serif;
+        }
+        .card-gradient {
+            background: linear-gradient(145deg, #0f0a1a 0%, #08050e 100%);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+    </style>
+</head>
+<body class="text-gray-300 antialiased">
+
+    <nav class="flex justify-between items-center px-10 py-6 max-w-7xl mx-auto">
+        <div class="flex items-center space-x-2">
+            <div class="flex space-x-0.5 items-end h-5">
+                <div class="w-1 h-3 bg-gray-400"></div>
+                <div class="w-1 h-5 bg-gray-400"></div>
+                <div class="w-1 h-4 bg-gray-400"></div>
+            </div>
+            <span class="font-bold text-lg tracking-tight text-white">Math<span class="font-light">Flash</span></span>
+        </div>
+        <button class="bg-zinc-800 hover:bg-zinc-700 text-white px-6 py-2 rounded-full text-sm font-medium transition">
+            Get Started
+        </button>
+    </nav>
+
+    <header class="text-center mt-24 mb-16 px-4">
+        <h1 class="serif-title text-5xl md:text-7xl text-white mb-6">
+            Smart Math for stupid people
+        </h1>
+        <p class="max-w-xl mx-auto text-gray-400 leading-relaxed text-lg">
+            Turn raw text into solid understanding. Select a module to process central tendencies, regressions, and exponential logic.
+        </p>
+    </header>
+
+    <main class="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 px-6 pb-20">
+        
+        <div class="card-gradient p-8 rounded-2xl flex flex-col justify-between group cursor-pointer hover:border-purple-900 transition">
+            <div>
+                <div class="w-10 h-10 bg-zinc-900 rounded-lg flex items-center justify-center mb-6 border border-zinc-800">
+                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                </div>
+                <h3 class="text-2xl text-white mb-4">Central Tendencies</h3>
+                <p class="text-gray-500 text-sm leading-relaxed mb-8">
+                    Mean, Median, Mode, Range, IQR, Standard Deviation, and the 68-95-99.7 Rule.
+                </p>
+            </div>
+            <a href="#" class="text-indigo-400 flex items-center text-sm font-semibold group-hover:underline">
+                Initialize <span class="ml-2">→</span>
+            </a>
+        </div>
+
+        <div class="card-gradient p-8 rounded-2xl flex flex-col justify-between group cursor-pointer hover:border-purple-900 transition">
+            <div>
+                <div class="w-10 h-10 bg-zinc-900 rounded-lg flex items-center justify-center mb-6 border border-zinc-800">
+                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                </div>
+                <h3 class="text-2xl text-white mb-4">Best Line Fit</h3>
+                <p class="text-gray-500 text-sm leading-relaxed mb-8">
+                    Scatter plots, linear regression, and correlation.
+                </p>
+            </div>
+            <a href="#" class="text-indigo-400 flex items-center text-sm font-semibold group-hover:underline">
+                Initialize <span class="ml-2">→</span>
+            </a>
+        </div>
+
+        <div class="card-gradient p-8 rounded-2xl flex flex-col justify-between group cursor-pointer hover:border-purple-900 transition">
+            <div>
+                <div class="w-10 h-10 bg-zinc-900 rounded-lg flex items-center justify-center mb-6 border border-zinc-800">
+                    <svg class="w-5 h-5 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                </div>
+                <h3 class="text-2xl text-white mb-4">Exponential Functions</h3>
+                <p class="text-gray-500 text-sm leading-relaxed mb-8">
+                    Growth, decay, and identifying exponential equations.
+                </p>
+            </div>
+            <a href="#" class="text-indigo-400 flex items-center text-sm font-semibold group-hover:underline">
+                Initialize <span class="ml-2">→</span>
+            </a>
+        </div>
+
+    </main>
+</body>
+</html>
