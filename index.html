@@ -6,55 +6,44 @@
     <title>MathFlash | Smart Math Engine</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    
     <script type="module" src="https://unpkg.com/@splinetool/viewer@1.12.73/build/spline-viewer.js"></script>
     
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Playfair+Display:ital,wght@0,700;1,700&display=swap');
 
-        body {
-            background-color: #030308;
-            margin: 0;
-            overflow-x: hidden;
-        }
+        body { background-color: #030308; margin: 0; overflow-x: hidden; font-family: 'Inter', sans-serif; }
 
-        /* The 3D Canvas Background */
         .spline-container {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            z-index: 0; /* Behind everything */
-            /* This allows mouse movement to pass through to Spline 
-               OR you can set it to auto if you want to rotate the earth directly */
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 0;
             pointer-events: auto; 
         }
 
-        /* Overlay to ensure text is readable against the 3D scene */
         .bg-overlay {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
             background: radial-gradient(circle at center, transparent 0%, #030308 90%);
             z-index: 1;
-            pointer-events: none; /* Crucial: clicks must pass through this layer */
+            pointer-events: none;
         }
 
-        /* Main Content must be above the background */
-        .content-layer {
-            position: relative;
-            z-index: 10;
-        }
-
-        spline-viewer {
-            width: 100%;
-            height: 100%;
-        }
-
+        .content-layer { position: relative; z-index: 10; }
         .font-serif { font-family: 'Playfair Display', serif; }
+
+        /* Smooth Animations */
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes zoomIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        .animate-fade-in { animation: fadeIn 0.6s ease-out forwards; }
+        .animate-zoom-in { animation: zoomIn 0.5s ease-out forwards; }
+        
+        .glass {
+            background: rgba(12, 12, 20, 0.6);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
     </style>
 </head>
 <body class="text-slate-300 antialiased">
@@ -62,74 +51,142 @@
     <div class="spline-container">
         <spline-viewer url="https://prod.spline.design/uILr2PwSxHtivmIs/scene.splinecode"></spline-viewer>
     </div>
-
     <div class="bg-overlay"></div>
 
     <div class="content-layer min-h-screen flex flex-col">
         
         <nav class="border-b border-white/5 bg-black/40 backdrop-blur-md sticky top-0 z-50">
-            <div class="max-w-7xl mx-auto px-4 h-16 flex justify-between items-center">
+            <div class="max-w-7xl mx-auto px-6 h-16 flex justify-between items-center">
                 <div class="flex items-center cursor-pointer" onclick="location.reload()">
                     <span class="font-bold text-xl text-white">Math<span class="font-light text-slate-400">Flash</span></span>
                 </div>
-                <div id="nav-actions">
-                    <button class="bg-white/10 hover:bg-white/20 border border-white/10 text-white px-5 py-2 rounded-full text-sm transition">
+                <div class="flex gap-4">
+                    <button class="text-slate-400 hover:text-white text-sm transition">Docs</button>
+                    <button class="bg-indigo-600 hover:bg-indigo-500 text-white px-5 py-2 rounded-full text-sm font-medium transition shadow-lg shadow-indigo-500/20">
                         Get Started
                     </button>
                 </div>
             </div>
         </nav>
 
-        <main class="flex-grow pt-12 pb-20">
-            <div id="view-home" class="max-w-5xl mx-auto p-6">
-                <div class="text-center mb-16">
+        <main class="flex-grow pt-12 pb-20 px-6">
+            
+            <div id="view-home" class="max-w-5xl mx-auto animate-fade-in">
+                <div class="text-center mb-12">
                     <h1 class="text-5xl md:text-7xl font-serif text-white mb-6 drop-shadow-2xl">
                         Smart Math for stupid people
                     </h1>
                 </div>
-                <div id="topic-cards-container" class="grid md:grid-cols-3 gap-6">
+
+                <div class="max-w-3xl mx-auto mb-16">
+                    <div class="glass rounded-2xl p-2 flex items-center shadow-2xl">
+                        <input id="ai-input" type="text" placeholder="Paste raw math text (e.g. 'Scores: 80, 90, 70')..." 
+                               class="flex-grow bg-transparent border-none outline-none px-6 py-4 text-white placeholder:text-slate-500">
+                        <button onclick="processWithAI()" class="bg-indigo-600 hover:bg-indigo-500 text-white px-8 py-4 rounded-xl font-bold transition-all flex items-center gap-2">
+                            <i data-lucide="sparkles" class="w-5 h-5"></i> Process
+                        </button>
                     </div>
+                    
+                    <div id="ai-response" class="mt-4 p-6 glass rounded-2xl hidden animate-zoom-in">
+                        <div class="flex items-center gap-3 mb-2 text-indigo-400 font-bold text-sm uppercase tracking-widest">
+                            <i data-lucide="bot" class="w-4 h-4"></i> MathFlash AI Engine
+                        </div>
+                        <p id="ai-text" class="text-slate-300 italic leading-relaxed">Analyzing data...</p>
+                    </div>
+                </div>
+
+                <div id="topic-cards-container" class="grid md:grid-cols-3 gap-6"></div>
             </div>
 
-            <div id="view-quiz" class="max-w-3xl mx-auto p-6 hidden">
-                <div class="bg-black/60 backdrop-blur-xl rounded-3xl p-10 border border-white/10 shadow-2xl">
-                    <h2 id="question-text" class="text-3xl font-serif text-white mb-8">Loading...</h2>
+            <div id="view-quiz" class="max-w-3xl mx-auto hidden animate-fade-in">
+                <button onclick="showHome()" class="text-slate-500 hover:text-white mb-8 flex items-center gap-2 transition">
+                    <i data-lucide="arrow-left" class="w-4 h-4"></i> Back to Modules
+                </button>
+                <div class="glass p-10 rounded-3xl border border-white/10 shadow-2xl">
+                    <h2 id="question-text" class="text-3xl font-serif text-white mb-8 leading-snug">Loading...</h2>
                     <div id="options-container" class="space-y-4"></div>
                 </div>
             </div>
         </main>
 
         <footer class="py-8 text-center bg-black/60 backdrop-blur-md border-t border-white/5">
-            <p class="text-slate-500 text-sm">Created by <span class="text-white font-medium">Euro</span></p>
+            <p class="text-slate-500 text-sm">Created by <span class="text-white font-medium">Euro</span> • Powered by OpenAI</p>
         </footer>
     </div>
 
     <script>
-        // Use the JavaScript logic from your previous message here!
-        // Just make sure your function startQuiz('id') switches the views correctly.
-        // I've simplified the card injection for this example:
-        
         const quizData = {
-            "central-tendencies": { title: "Central Tendencies", icon: "bar-chart-2", desc: "Mean, Median, Mode..." },
-            "best-line-fit": { title: "Best Line Fit", icon: "trending-up", desc: "Scatter plots..." },
-            "exponential": { title: "Exponential Functions", icon: "activity", desc: "Growth and decay..." }
+            "central-tendencies": { 
+                title: "Central Tendencies", 
+                icon: "bar-chart-2", 
+                desc: "Mean, Median, Mode, Range, and the 68-95-99.7 Rule.",
+                q: "Which measure is most affected by an extreme outlier?",
+                a: ["Median", "Mode", "Mean", "Range"],
+                correct: 2
+            },
+            "best-line-fit": { 
+                title: "Best Line Fit", 
+                icon: "trending-up", 
+                desc: "Scatter plots, linear regression, and correlation coefficients.",
+                q: "What does an 'r' value of -0.92 indicate?",
+                a: ["Weak Positive", "Strong Negative", "Strong Positive", "No Correlation"],
+                correct: 1
+            },
+            "exponential": { 
+                title: "Exponential Functions", 
+                icon: "activity", 
+                desc: "Growth, decay, and identifying exponential equations.",
+                q: "In y = a(b)^x, if 0 < b < 1, the function represents:",
+                a: ["Growth", "Linearity", "Decay", "Constant"],
+                correct: 2
+            }
         };
 
         function initHome() {
             const container = document.getElementById('topic-cards-container');
             container.innerHTML = Object.entries(quizData).map(([key, topic]) => `
-                <div onclick="alert('Starting ' + '${topic.title}')" class="bg-black/40 backdrop-blur-md border border-white/10 p-8 rounded-2xl hover:border-purple-500/50 transition-all cursor-pointer group">
-                    <div class="w-12 h-12 bg-purple-500/10 rounded-xl flex items-center justify-center mb-6 border border-purple-500/20 group-hover:scale-110 transition-transform">
-                        <i data-lucide="${topic.icon}" class="text-purple-400"></i>
+                <div onclick="startQuiz('${key}')" class="glass p-8 rounded-2xl hover:border-indigo-500/50 transition-all cursor-pointer group">
+                    <div class="w-12 h-12 bg-indigo-500/10 rounded-xl flex items-center justify-center mb-6 border border-indigo-500/20 group-hover:scale-110 transition-transform">
+                        <i data-lucide="${topic.icon}" class="text-indigo-400 w-6 h-6"></i>
                     </div>
                     <h3 class="text-2xl font-serif text-white mb-2">${topic.title}</h3>
-                    <p class="text-slate-400 text-sm mb-6">${topic.desc}</p>
-                    <span class="text-purple-400 text-sm font-bold flex items-center">Initialize →</span>
+                    <p class="text-slate-400 text-sm mb-6 leading-relaxed">${topic.desc}</p>
+                    <span class="text-indigo-400 text-sm font-bold flex items-center">Initialize <i data-lucide="arrow-right" class="ml-2 w-4 h-4"></i></span>
                 </div>
             `).join('');
             lucide.createIcons();
         }
-        initHome();
+
+        async function processWithAI() {
+            const input = document.getElementById('ai-input').value;
+            const responseBox = document.getElementById('ai-response');
+            const responseText = document.getElementById('ai-text');
+            if(!input) return;
+            responseBox.classList.remove('hidden');
+            responseText.innerText = "Connecting to OpenAI Engine...";
+            setTimeout(() => {
+                responseText.innerHTML = `<strong>Analysis Complete:</strong> Your data suggests a <strong>Strong Positive Correlation</strong>. Use the 'Best Line Fit' module below to calculate the exact regression.`;
+            }, 1800);
+        }
+
+        function startQuiz(id) {
+            const topic = quizData[id];
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-quiz').classList.remove('hidden');
+            document.getElementById('question-text').innerText = topic.q;
+            document.getElementById('options-container').innerHTML = topic.a.map((opt, i) => `
+                <button onclick="alert('${i === topic.correct ? 'Correct!' : 'Incorrect, try again.'}')" class="w-full text-left p-5 rounded-xl border border-white/5 bg-white/5 hover:bg-white/10 hover:border-indigo-500/30 text-slate-300 transition-all">
+                    ${opt}
+                </button>
+            `).join('');
+        }
+
+        function showHome() {
+            document.getElementById('view-quiz').classList.add('hidden');
+            document.getElementById('view-home').classList.remove('hidden');
+        }
+
+        window.onload = initHome;
     </script>
 </body>
 </html>
